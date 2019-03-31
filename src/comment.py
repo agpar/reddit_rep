@@ -111,8 +111,10 @@ class CommentStats():
 class ChildStats():
     def __init__(self):
         self.avg_score = None
+        self.std_score = None
 
     def to_vector(self):
         return [
-            self.avg_score
+            self.avg_score,
+            self.std_score
         ]

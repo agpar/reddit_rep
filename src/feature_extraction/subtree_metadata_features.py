@@ -3,6 +3,22 @@
 import math
 import numpy as np
 
+def compute_subtree_metadata_features(c, stf):
+    st_stats = c.st_stats
+
+    # Tree dimension features
+    st_stats.size = tree_size(c)
+    st_stats.depth = tree_depth(c)
+
+    # Score based features
+    st_stats.avg_score = average_score(c, stf)
+    st_stats.std_dev_score = std_dev_score(c, stf)
+    st_stats.min_score = min_score(stf)
+    st_stats.max_score = max_score(stf)
+
+    # Controversiality
+    st_stats.percent_controversial = percent_controversial(c, stf)
+
 
 def tree_size(comment):
     if len(comment.children) > 0:

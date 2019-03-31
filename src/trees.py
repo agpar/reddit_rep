@@ -4,7 +4,10 @@ from tqdm import tqdm
 import feature_extraction as FE
 from comment import Comment
 from feature_extraction import SubtreeFeatures
-from settings import SHOW_PROGRESS
+from feature_extraction import compute_child_features
+from feature_extraction import compute_nl_features
+from feature_extraction import compute_subtree_metadata_features
+from settings import settings
 
 
 def build_trees(comments):
@@ -15,7 +18,7 @@ def build_trees(comments):
 
     trees = []
     roots = [c for c in comments if c.parent_type == 'link']
-    if SHOW_PROGRESS:
+    if settings['SHOW_PROGRESS']:
         roots = tqdm(roots)
     for c in roots:
         tree_root, tree_features = _build_rec_tree(c, by_parent)
@@ -40,32 +43,15 @@ def _build_rec_tree(c: Comment, by_parent) -> (Comment, SubtreeFeatures):
 
 def _compute_features(c: Comment, subtree_features: SubtreeFeatures):
     """Computes an associates aggregate features of this subtree"""
-    st_stats = c.st_stats
 
-    # Tree dimension features
-    st_stats.size = FE.tree_size(c)
-    st_stats.depth = FE.tree_depth(c)
-
-    # Score based features
-    st_stats.avg_score = FE.average_score(c, subtree_features)
-    st_stats.std_dev_score = FE.std_dev_score(c, subtree_features)
-    st_stats.min_score = FE.min_score(subtree_features)
-    st_stats.max_score = FE.max_score(subtree_features)
-
-    # Controversiality
-    st_stats.percent_controversial = FE.percent_controversial(c,
-                                                           subtree_features)
-
-    # Single comment stats
-    stats = c.stats
-    stats.word_count = FE.word_count(c)
-    stats.prp_first = FE.percent_first_pronouns(c)
-    stats.prp_second = FE.percent_second_pronouns(c)
-    stats.prp_third = FE.percent_third_pronouns(c)
+    # subtree features
+    compute_subtree_metadata_features(c, subtree_features)
 
     # Children stats
-    ch_stats = c.ch_stats
-    ch_stats.avg_score = FE.avg_child_score(c)
+    compute_child_features(c)
+
+    # Natural language stats
+    compute_nl_features(c)
 
 
 def print_tree(c: Comment, indent=0):

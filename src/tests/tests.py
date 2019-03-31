@@ -3,6 +3,9 @@ from unittest import TestCase
 from comment import Comment
 from trees import build_trees
 from tests.test_data import test_comments as data
+from settings import settings
+
+settings['SHOW_PROGRESS'] = False
 
 
 class TestSubtreeStats(TestCase):
