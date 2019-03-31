@@ -27,8 +27,10 @@ class SubtreeFeatures:
 
 
 def tree_size(comment):
-    return 1 + sum([c.stats.size for c in comment.children])
-
+    if len(comment.children) > 0:
+        return sum([(1 + c.stats.size) for c in comment.children])
+    else:
+        return 0
 
 def tree_depth(comment):
     if len(comment.children) > 0:
@@ -70,6 +72,6 @@ def max_score(subtree_features):
 
 
 def percent_controversial(comment, subtree_features):
-    if comment.stats.size == 1:
+    if comment.stats.size == 0:
         return None
-    return subtree_features.controversial_count / (comment.stats.size - 1)
+    return subtree_features.controversial_count / comment.stats.size

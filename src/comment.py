@@ -5,6 +5,8 @@ class Comment:
         self._data = data
 
         self.children = []
+
+        # stats does not include any properties of this node.
         self.stats = SubtreeStats()
 
     @property
@@ -53,9 +55,7 @@ class Comment:
 
 class SubtreeStats():
     def __init__(self):
-
-        # Includes the node itself, for recursion reasons
-        self.size = 1
+        self.size = 0
         self.depth = 0
 
         # Score based features
