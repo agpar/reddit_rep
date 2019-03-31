@@ -1,6 +1,7 @@
 """Feature extraction tools that operate on a Comment (tree) structure"""
 
 import math
+import numpy as np
 
 class SubtreeFeatures:
     """Stores features of a subtree to help with recursive feautre building."""
@@ -43,8 +44,7 @@ def average_score(comment, subtree_features):
     """Average score of discussion, does not include root"""
     if not subtree_features.scores:
         return None
-    # (comment.tree_size - 1) to exclude root.
-    return sum(subtree_features.scores) / (comment.stats.size - 1)
+    return np.mean(subtree_features.scores)
 
 
 def std_dev_score(comment, subtree_features):
@@ -56,7 +56,7 @@ def std_dev_score(comment, subtree_features):
     if not avg:
         return None
 
-    return math.sqrt(sum(pow(s - avg, 2) for s in subtree_features.scores))
+    return np.std(subtree_features.scores)
 
 
 def min_score(subtree_features):
