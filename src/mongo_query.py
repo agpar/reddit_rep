@@ -3,7 +3,7 @@ from collections import defaultdict
 from typing import List
 
 import comment
-from comment import Comment, Node, SubtreeStats
+from comment import Comment, SubtreeStats
 import feature_extraction as FE
 from feature_extraction import SubtreeFeatures
 
@@ -43,50 +43,49 @@ def build_trees(comments):
     return trees
 
 
-def _build_rec_tree(c: Comment, by_parent) -> (Node, SubtreeFeatures):
-    n = Node(c)
+def _build_rec_tree(c: Comment, by_parent) -> (Comment, SubtreeFeatures):
     subtree_featues = []
     for child in by_parent[c.comment_id]:
         subtree, features = _build_rec_tree(child, by_parent)
         subtree_featues.append(features)
-        n.children.append(subtree)
+        c.children.append(subtree)
 
     combined_features = SubtreeFeatures.combine(subtree_featues)
-    _compute_features(n, combined_features)
+    _compute_features(c, combined_features)
 
-    combined_features.update(n)
-    return n, combined_features
+    combined_features.update(c)
+    return c, combined_features
 
 
-def _compute_features(node: Node, subtree_features: SubtreeFeatures):
+def _compute_features(c: Comment, subtree_features: SubtreeFeatures):
     """Computes an associates aggregate features of this subtree"""
-    stats = node.stats
+    stats = c.stats
 
     # Tree dimension features
-    stats.size = FE.tree_size(node)
-    stats.depth = FE.tree_depth(node)
+    stats.size = FE.tree_size(c)
+    stats.depth = FE.tree_depth(c)
 
     # Score based features
-    stats.avg_score = FE.average_score(node, subtree_features)
-    stats.std_dev_score = FE.std_dev_score(node, subtree_features)
+    stats.avg_score = FE.average_score(c, subtree_features)
+    stats.std_dev_score = FE.std_dev_score(c, subtree_features)
     stats.min_score = FE.min_score(subtree_features)
     stats.max_score = FE.max_score(subtree_features)
 
     # Controversiality
-    stats.percent_controversial = FE.percent_controversial(node,
+    stats.percent_controversial = FE.percent_controversial(c,
                                                            subtree_features)
 
 
-def print_tree(node: Node, indent=0):
+def print_tree(c: Comment, indent=0):
     indents = [" " for i in range(indent)]
-    print("".join(indents) + node.comment.body)
-    for c in node.children:
+    print("".join(indents) + c.body)
+    for c in c.children:
         print_tree(c, indent=indent + 2)
 
 
 def interactive():
     comments = load_comments(comments_db)
-    tree = build_trees(comments)
+    trees = build_trees(comments)
     return comments, trees
 
 # comments, trees = interactive()

@@ -1,10 +1,10 @@
-"""Feature extraction tools that operate on a Node (tree) structure"""
+"""Feature extraction tools that operate on a Comment (tree) structure"""
 
 import math
 from typing import List
 
 import nltk
-from comment import Node
+from comment import Comment
 
 
 class SubtreeFeatures:
@@ -25,37 +25,37 @@ class SubtreeFeatures:
 
         return combined
 
-    def update(self, node):
-        """Updates this instance with the features from the given node."""
-        self.scores.append(node.comment.score)
-        self.controversial_count += node.comment.controversial
+    def update(self, comment):
+        """Updates this instance with the features from the given comment."""
+        self.scores.append(comment.score)
+        self.controversial_count += comment.controversial
 
 
-def tree_size(node):
-    return 1 + sum([c.stats.size for c in node.children])
+def tree_size(comment):
+    return 1 + sum([c.stats.size for c in comment.children])
 
 
-def tree_depth(node):
-    if len(node.children) > 0:
-        return 1 + max([c.stats.depth for c in node.children])
+def tree_depth(comment):
+    if len(comment.children) > 0:
+        return 1 + max([c.stats.depth for c in comment.children])
     else:
         return 0
 
 
-def average_score(node, subtree_features):
+def average_score(comment, subtree_features):
     """Average score of discussion, does not include root"""
     if not subtree_features.scores:
         return None
-    # (node.tree_size - 1) to exclude root.
-    return sum(subtree_features.scores) / (node.stats.size - 1)
+    # (comment.tree_size - 1) to exclude root.
+    return sum(subtree_features.scores) / (comment.stats.size - 1)
 
 
-def std_dev_score(node, subtree_features):
+def std_dev_score(comment, subtree_features):
     """Std dev of score of discussion, does not include root"""
     if not subtree_features.scores:
         return None
 
-    avg = node.stats.avg_score
+    avg = comment.stats.avg_score
     if not avg:
         return None
 
@@ -74,7 +74,7 @@ def max_score(subtree_features):
     return max(subtree_features.scores)
 
 
-def percent_controversial(node, subtree_features):
-    if node.stats.size == 1:
+def percent_controversial(comment, subtree_features):
+    if comment.stats.size == 1:
         return None
-    return subtree_features.controversial_count / (node.stats.size - 1)
+    return subtree_features.controversial_count / (comment.stats.size - 1)

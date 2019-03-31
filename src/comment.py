@@ -4,6 +4,9 @@ class Comment:
             raise Exception("Need a full data dict.")
         self._data = data
 
+        self.children = []
+        self.stats = SubtreeStats()
+
     @property
     def comment_id(self):
         return self._data['id']
@@ -46,15 +49,6 @@ class Comment:
     @property
     def controversial(self):
         return bool(self._data['controversiality'])
-
-
-class Node():
-    """Implements tree and holds stats of subtree (not including this node)"""
-
-    def __init__(self, root: Comment):
-        self.comment = root
-        self.children = []
-        self.stats = SubtreeStats()
 
 
 class SubtreeStats():
