@@ -2,12 +2,24 @@ class Comment:
     def __init__(self, data):
         if not data:
             raise Exception("Need a full data dict.")
+
+        # The original data dict
         self._data = data
 
+        # A list of children - to be filled while constructing trees.
         self.children = []
 
-        # stats does not include any properties of this node.
-        self.stats = SubtreeStats()
+        # Places to store tokenized/labelled versions of the body.
+        self.blob = None
+
+        # Stats about this particular comment
+        self.stats = CommentStats()
+
+        # Stats about the subtree rooted at this comment.
+        self.st_stats = SubtreeStats()
+
+        # Stats abou    t the direct children of this comment.
+        self.ch_stats = ChildStats()
 
     @property
     def comment_id(self):
@@ -55,8 +67,8 @@ class Comment:
 
 class SubtreeStats():
     def __init__(self):
-        self.size = 0
-        self.depth = 0
+        self.size = None
+        self.depth = None
 
         # Score based features
         self.avg_score = None
@@ -66,3 +78,13 @@ class SubtreeStats():
 
         # controversiality based
         self.percent_controversial = None
+
+
+class CommentStats():
+    def __init__(self):
+        self.word_count = None
+
+
+class ChildStats():
+    def __init__(self):
+        self.avg_score = None

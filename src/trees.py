@@ -35,7 +35,7 @@ def _build_rec_tree(c: Comment, by_parent) -> (Comment, SubtreeFeatures):
 
 def _compute_features(c: Comment, subtree_features: SubtreeFeatures):
     """Computes an associates aggregate features of this subtree"""
-    stats = c.stats
+    stats = c.st_stats
 
     # Tree dimension features
     stats.size = FE.tree_size(c)

@@ -6,14 +6,14 @@ import numpy as np
 
 def tree_size(comment):
     if len(comment.children) > 0:
-        return sum([(1 + c.stats.size) for c in comment.children])
+        return sum([(1 + c.st_stats.size) for c in comment.children])
     else:
         return 0
 
 
 def tree_depth(comment):
     if len(comment.children) > 0:
-        return 1 + max([c.stats.depth for c in comment.children])
+        return 1 + max([c.st_stats.depth for c in comment.children])
     else:
         return 0
 
@@ -30,7 +30,7 @@ def std_dev_score(comment, subtree_features):
     if not subtree_features.scores:
         return None
 
-    avg = comment.stats.avg_score
+    avg = comment.st_stats.avg_score
     if not avg:
         return None
 
@@ -50,6 +50,6 @@ def max_score(subtree_features):
 
 
 def percent_controversial(comment, subtree_features):
-    if comment.stats.size == 0:
+    if comment.st_stats.size == 0:
         return None
-    return subtree_features.controversial_count / comment.stats.size
+    return subtree_features.controversial_count / comment.st_stats.size

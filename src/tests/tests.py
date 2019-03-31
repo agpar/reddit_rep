@@ -10,7 +10,7 @@ class TestSubtreeStats(TestCase):
     def setUp(self):
         self.comments = [Comment(c) for c in data['comment_data']]
         self.tree, self.stf = build_trees(self.comments)[0]
-        self.stats = self.tree.stats
+        self.stats = self.tree.st_stats
 
     def test_size(self):
         self.assertEqual(self.stats.size, data['size'])
