@@ -64,6 +64,15 @@ class Comment:
     def controversial(self):
         return bool(self._data['controversiality'])
 
+    def to_vector(self):
+        vect = []
+        vect.extend(self.st_stats.to_vector())
+        vect.extend(self.ch_stats.to_vector())
+        return vect
+
+    def is_valid(self):
+        return None not in self.to_vector()
+
 
 class SubtreeStats():
     def __init__(self):
@@ -79,6 +88,16 @@ class SubtreeStats():
         # controversiality based
         self.percent_controversial = None
 
+    def to_vector(self):
+        return [
+            self.size,
+            self.depth,
+            self.avg_score,
+            self.std_dev_score,
+            self.min_score,
+            self.max_score,
+            self.percent_controversial
+        ]
 
 class CommentStats():
     def __init__(self):
@@ -92,3 +111,8 @@ class CommentStats():
 class ChildStats():
     def __init__(self):
         self.avg_score = None
+
+    def to_vector(self):
+        return [
+            self.avg_score
+        ]
