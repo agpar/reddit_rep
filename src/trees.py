@@ -56,11 +56,16 @@ def _compute_features(c: Comment, subtree_features: SubtreeFeatures):
     st_stats.percent_controversial = FE.percent_controversial(c,
                                                            subtree_features)
 
+    # Single comment stats
     stats = c.stats
     stats.word_count = FE.word_count(c)
     stats.prp_first = FE.percent_first_pronouns(c)
     stats.prp_second = FE.percent_second_pronouns(c)
     stats.prp_third = FE.percent_third_pronouns(c)
+
+    # Children stats
+    ch_stats = c.ch_stats
+    ch_stats.avg_score = FE.avg_child_score(c)
 
 
 def print_tree(c: Comment, indent=0):
