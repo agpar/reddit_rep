@@ -82,7 +82,11 @@ class SubtreeStats():
 
 class CommentStats():
     def __init__(self):
+        # Natural language stats
         self.word_count = None
+        self.prp_first = None
+        self.prp_second = None
+        self.prp_third = None
 
 
 class ChildStats():

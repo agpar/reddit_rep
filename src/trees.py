@@ -58,6 +58,9 @@ def _compute_features(c: Comment, subtree_features: SubtreeFeatures):
 
     stats = c.stats
     stats.word_count = FE.word_count(c)
+    stats.prp_first = FE.percent_first_pronouns(c)
+    stats.prp_second = FE.percent_second_pronouns(c)
+    stats.prp_third = FE.percent_third_pronouns(c)
 
 
 def print_tree(c: Comment, indent=0):
