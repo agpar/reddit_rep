@@ -1,11 +1,6 @@
 """Feature extraction tools that operate on a Comment (tree) structure"""
 
 import math
-from typing import List
-
-import nltk
-from comment import Comment
-
 
 class SubtreeFeatures:
     """Stores features of a subtree to help with recursive feautre building."""
