@@ -34,7 +34,7 @@ def _blob(comment: Comment):
 
 
 def comment_languge(comment: Comment):
-    if c.body == '[deleted]':
+    if comment.body == '[deleted]':
         return 'en'
 
     d = Detector(comment.body, quiet=True)
@@ -66,8 +66,10 @@ def percent_first_pronouns(comment: Comment):
         return None
 
     prp = [w.lower() for w,t in _blob(comment).tags if t == 'PRP']
+    if len(prp) == 0:
+        return 0
     prp_count = len([p for p in prp if p in eng_prp_first])
-    return prp_count / comment.stats['word_count']
+    return prp_count / len(prp)
 
 
 def percent_second_pronouns(comment: Comment):
@@ -75,8 +77,10 @@ def percent_second_pronouns(comment: Comment):
         return None
 
     prp = [w.lower() for w,t in _blob(comment).tags if t == 'PRP']
+    if len(prp) == 0:
+        return 0
     prp_count = len([p for p in prp if p in eng_prp_second])
-    return prp_count / comment.stats['word_count']
+    return prp_count / len(prp)
 
 
 def percent_third_pronouns(comment: Comment):
@@ -84,5 +88,7 @@ def percent_third_pronouns(comment: Comment):
         return None
 
     prp = [w.lower() for w,t in _blob(comment).tags if t == 'PRP']
+    if len(prp) == 0:
+        return 0
     prp_count = len([p for p in prp if p in eng_prp_third])
-    return prp_count / comment.stats['word_count']
+    return prp_count / len(prp)
