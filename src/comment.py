@@ -1,3 +1,6 @@
+from collections import OrderedDict
+import numpy as np
+
 class Comment:
     def __init__(self, data):
         if not data:
@@ -13,13 +16,13 @@ class Comment:
         self.blob = None
 
         # Stats about this particular comment
-        self.stats = CommentStats()
+        self.stats = CommentFeatures()
 
         # Stats about the subtree rooted at this comment.
-        self.st_stats = SubtreeStats()
+        self.st_stats = CommentFeatures()
 
         # Stats abou    t the direct children of this comment.
-        self.ch_stats = ChildStats()
+        self.ch_stats = CommentFeatures()
 
     @property
     def comment_id(self):
@@ -70,51 +73,43 @@ class Comment:
         vect.extend(self.ch_stats.to_vector())
         return vect
 
+    def vector_labels(self):
+        vect = []
+        vect.extend(self.st_stats.to_vector_labels())
+        vect.extend(self.ch_stats.to_vector_labels())
+        return vect
+
+    def to_labelled_vector(self):
+        vect = []
+        vect.extend(self.st_stats.to_labelled_vector())
+        vect.extend(self.ch_stats.to_labelled_vector())
+        return vect
+
     def is_valid(self):
-        return None not in self.to_vector()
+        vect = self.to_vector()
+        return vect and None not in vect
 
 
-class SubtreeStats():
-    def __init__(self):
-        self.size = None
-        self.depth = None
+class CommentFeatures():
+    def __init__(self, feats=None):
+        if feats is None:
+            feats = list()
+        self._feats = OrderedDict(feats)
 
-        # Score based features
-        self.avg_score = None
-        self.std_dev_score = None
-        self.min_score = None
-        self.max_score = None
+    def __getitem__(self, str_key):
+        return self._feats.__getitem__(str_key)
 
-        # controversiality based
-        self.percent_controversial = None
+    def __setitem__(self, str_key, value):
+        return self._feats.__setitem__(str_key, value)
 
-    def to_vector(self):
-        return [
-            self.size,
-            self.depth,
-            self.avg_score,
-            self.std_dev_score,
-            self.min_score,
-            self.max_score,
-            self.percent_controversial
-        ]
-
-class CommentStats():
-    def __init__(self):
-        # Natural language stats
-        self.word_count = None
-        self.prp_first = None
-        self.prp_second = None
-        self.prp_third = None
-
-
-class ChildStats():
-    def __init__(self):
-        self.avg_score = None
-        self.std_score = None
+    def get(self, key, d=None):
+        return self._feats.get(key, d)
 
     def to_vector(self):
-        return [
-            self.avg_score,
-            self.std_score
-        ]
+        return np.array(list(self._feats.values()))
+
+    def vector_labels(self):
+        return np.array(list(self._feats.keys()))
+
+    def to_labelled_vector(self):
+        return list(zip(self.vector_labels(), self.to_vector()))
