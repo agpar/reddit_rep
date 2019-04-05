@@ -2,6 +2,9 @@ from collections import OrderedDict
 import numpy as np
 
 class Comment:
+    include_child_stats = True
+    include_st_stats = True
+
     def __init__(self, data):
         if not data:
             raise Exception("Need a full data dict.")
@@ -67,22 +70,28 @@ class Comment:
     def controversial(self):
         return bool(self._data['controversiality'])
 
-    def to_vector(self):
+    def to_vector(self, ch=True, st=True):
         vect = []
-        vect.extend(self.st_stats.to_vector())
-        vect.extend(self.ch_stats.to_vector())
+        if ch:
+            vect.extend(self.ch_stats.to_vector())
+        if st:
+            vect.extend(self.st_stats.to_vector())
         return vect
 
-    def vector_labels(self):
+    def vector_labels(self, ch=True, st=True):
         vect = []
-        vect.extend(self.st_stats.to_vector_labels())
-        vect.extend(self.ch_stats.to_vector_labels())
+        if ch:
+            vect.extend(self.ch_stats.vector_labels())
+        if st:
+            vect.extend(self.st_stats.vector_labels())
         return vect
 
-    def to_labelled_vector(self):
+    def to_labelled_vector(self, ch=True, st=True):
         vect = []
-        vect.extend(self.st_stats.to_labelled_vector())
-        vect.extend(self.ch_stats.to_labelled_vector())
+        if ch:
+            vect.extend(self.ch_stats.to_labelled_vector())
+        if st:
+            vect.extend(self.st_stats.to_labelled_vector())
         return vect
 
     def is_valid(self):
@@ -101,6 +110,9 @@ class CommentFeatures():
 
     def __setitem__(self, str_key, value):
         return self._feats.__setitem__(str_key, value)
+
+    def update(self, iter):
+        return self._feats.update(iter)
 
     def get(self, key, d=None):
         return self._feats.get(key, d)
