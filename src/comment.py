@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import numbers
 import numpy as np
 
 class Comment:
@@ -124,10 +125,12 @@ class CommentFeatures():
         return self._feats.get(key, d)
 
     def to_vector(self):
-        return np.array(list(self._feats.values()))
+        items = self._feats.items()
+        return list(float(v) for k, v in items if isinstance(v, numbers.Number))
 
     def vector_labels(self):
-        return np.array(list(self._feats.keys()))
+        items = self._feats.items()
+        return list(k for k, v in items if isinstance(v, numbers.Number))
 
     def to_labelled_vector(self):
         return list(zip(self.vector_labels(), self.to_vector()))

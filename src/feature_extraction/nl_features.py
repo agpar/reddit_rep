@@ -7,6 +7,7 @@ import logging
 import nltk
 from polyglot.detect import Detector
 from textblob import TextBlob
+from profanity_check import predict_prob as profanity
 
 from comment import Comment, CommentFeatures
 from feature_extraction.nl_sets import *
@@ -27,7 +28,7 @@ def compute_nl_features(c: Comment):
     stats['punc_excl'] = percent_punc_exclamation(c)
     stats['punc_per'] = percent_punc_period(c)
     stats['punc'] = percent_punc(c)
-
+    #stats['profanity'] = profanity_prob(c)
 
 
 def _blob(comment: Comment):
@@ -146,3 +147,9 @@ def percent_punc(comment: Comment):
     if len(punc) == 0:
         return 0
     return len(punc)/len(_blob(comment).tokens)
+
+
+def profanity_prob(comment: Comment):
+    if should_nl_bail(comment):
+        return None
+    return float(profanity([comment.body])[0])
