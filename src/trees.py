@@ -11,9 +11,9 @@ from settings import settings
 from sql_query import get_parents, get_all, comment_iter, get_children_of
 
 
-def GenerateTrees():
+def GenerateTrees(already_seen=set()):
     """Build up all trees using a generator style"""
-    root_cursor = get_parents()
+    root_cursor = get_parents(already_seen)
     for root in comment_iter(root_cursor):
         tree_root, tree_features = _generate_rec_tree(root)
         yield tree_root

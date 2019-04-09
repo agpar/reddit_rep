@@ -70,28 +70,34 @@ class Comment:
     def controversial(self):
         return bool(self._data['controversiality'])
 
-    def to_vector(self, ch=True, st=True):
+    def to_vector(self, ch=True, st=True, labels=True):
         vect = []
         if ch:
             vect.extend(self.ch_stats.to_vector())
         if st:
             vect.extend(self.st_stats.to_vector())
+        if labels:
+            vect.extend(self.stats.to_vector())
         return vect
 
-    def vector_labels(self, ch=True, st=True):
+    def vector_labels(self, ch=True, st=True, labels=True):
         vect = []
         if ch:
             vect.extend(self.ch_stats.vector_labels())
         if st:
             vect.extend(self.st_stats.vector_labels())
+        if labels:
+            vect.extend(self.stats.vector_labels())
         return vect
 
-    def to_labelled_vector(self, ch=True, st=True):
+    def to_labelled_vector(self, ch=True, st=True, labels=True):
         vect = []
         if ch:
             vect.extend(self.ch_stats.to_labelled_vector())
         if st:
             vect.extend(self.st_stats.to_labelled_vector())
+        if labels:
+            vect.extend(self.stats.to_labelled_vector())
         return vect
 
     def is_valid(self):

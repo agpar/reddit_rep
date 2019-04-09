@@ -16,7 +16,7 @@ def compute_child_features(c):
     stats.update(multi(c, lambda x: x.stats['sent'], 'sent'))
     stats.update(multi(c, lambda x: x.stats['punc_ques'], 'punc_ques'))
     stats.update(multi(c, lambda x: x.stats['punc_excl'], 'punc_excl'))
-    stats.update(multi(c, lambda x: x.stats['pucn_per'], 'pucn_per'))
+    stats.update(multi(c, lambda x: x.stats['punc_per'], 'pucn_per'))
     stats.update(multi(c, lambda x: x.stats['punc'], 'punc'))
 
     stats['child_score_disag'] = child_disagreement(c)

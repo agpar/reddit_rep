@@ -25,7 +25,7 @@ def compute_nl_features(c: Comment):
     stats['sent'] = sentiment(c)
     stats['punc_ques'] = percent_punc_question(c)
     stats['punc_excl'] = percent_punc_exclamation(c)
-    stats['pucn_per'] = percent_punc_period(c)
+    stats['punc_per'] = percent_punc_period(c)
     stats['punc'] = percent_punc(c)
 
 

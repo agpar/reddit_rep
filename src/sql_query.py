@@ -35,14 +35,17 @@ def comment_iter(cursor):
         yield Comment(d)
 
 
-def get_parents() -> sqlite3.Cursor:
+def get_parents(already_seen=set()) -> sqlite3.Cursor:
     """Get all comments with at least one child.
 
     Sample comment data set has 579_402
     """
-    query = """
+    already_seen = [f"'{x}'" for x in already_seen]
+    already_seen =  "(" + ",".join(already_seen) + ")"
+    query = f"""
         SELECT * FROM comments
-        WHERE "t1_" || id in (
+        WHERE id not in {already_seen} and
+        "t1_" || id in (
             SELECT parent_id
             FROM comments
         );
