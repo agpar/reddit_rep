@@ -13,8 +13,13 @@ def compute_child_features(c):
     stats.update(multi(c, lambda x: x.stats['prp_first'], 'prp_first'))
     stats.update(multi(c, lambda x: x.stats['prp_second'], 'prp_second'))
     stats.update(multi(c, lambda x: x.stats['prp_third'], 'prp_third'))
+    stats.update(multi(c, lambda x: x.stats['sent'], 'sent'))
+    stats.update(multi(c, lambda x: x.stats['punc_ques'], 'punc_ques'))
+    stats.update(multi(c, lambda x: x.stats['punc_excl'], 'punc_excl'))
+    stats.update(multi(c, lambda x: x.stats['pucn_per'], 'pucn_per'))
+    stats.update(multi(c, lambda x: x.stats['punc'], 'punc'))
 
-    stats['disagreement'] = child_disagreement(c)
+    stats['child_score_disag'] = child_disagreement(c)
 
 def _avg(comment, selector):
     data = [selector(c) for c in comment.children]
@@ -59,7 +64,6 @@ def _median(comment, selector):
 
     data.sort()
     return data[int(len(data)/2)]
-
 
 
 def multi(comment, selector, label):

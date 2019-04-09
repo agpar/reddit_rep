@@ -22,6 +22,12 @@ def compute_nl_features(c: Comment):
     stats['prp_first'] = percent_first_pronouns(c)
     stats['prp_second'] = percent_second_pronouns(c)
     stats['prp_third'] = percent_third_pronouns(c)
+    stats['sent'] = sentiment(c)
+    stats['punc_ques'] = percent_punc_question(c)
+    stats['punc_excl'] = percent_punc_exclamation(c)
+    stats['pucn_per'] = percent_punc_period(c)
+    stats['punc'] = percent_punc(c)
+
 
 
 def _blob(comment: Comment):
@@ -92,3 +98,51 @@ def percent_third_pronouns(comment: Comment):
         return 0
     prp_count = len([p for p in prp if p in eng_prp_third])
     return prp_count / len(prp)
+
+def sentiment(comment: Comment):
+    if should_nl_bail(comment):
+        return None
+
+    return _blob(comment).polarity
+
+
+def percent_punc_question(comment: Comment):
+    if should_nl_bail(comment):
+        return None
+
+    punc = [p for p in _blob(comment).tokens if p in eng_punc]
+    if len(punc) == 0:
+        return 0
+    ques = [p for p in punc if p == '?']
+    return len(ques) / len(punc)
+
+
+def percent_punc_exclamation(comment: Comment):
+    if should_nl_bail(comment):
+        return None
+
+    punc = [p for p in _blob(comment).tokens if p in eng_punc]
+    if len(punc) == 0:
+        return 0
+    excl = [p for p in punc if p == '!']
+    return len(excl) / len(punc)
+
+
+def percent_punc_period(comment: Comment):
+    if should_nl_bail(comment):
+        return None
+
+    punc = [p for p in _blob(comment).tokens if p in eng_punc]
+    if len(punc) == 0:
+        return 0
+    per = [p for p in punc if p == '.']
+    return len(per) / len(punc)
+
+
+def percent_punc(comment: Comment):
+    if should_nl_bail(comment):
+        return None
+    punc = [p for p in _blob(comment).tokens if p in eng_punc]
+    if len(punc) == 0:
+        return 0
+    return len(punc)/len(_blob(comment).tokens)
