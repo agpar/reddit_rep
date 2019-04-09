@@ -60,11 +60,11 @@ class Comment:
 
     @property
     def score(self):
-        return self._data['score']
+        return int(self._data['score'])
 
     @property
     def gilded(self):
-        return self._data['gilded']
+        return bool(self._data['gilded'])
 
     @property
     def controversial(self):

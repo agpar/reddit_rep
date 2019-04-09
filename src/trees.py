@@ -8,6 +8,32 @@ from feature_extraction import compute_child_features
 from feature_extraction import compute_nl_features
 from feature_extraction import compute_subtree_metadata_features
 from settings import settings
+from sql_query import get_parents, get_all, comment_iter, get_children_of
+
+
+def GenerateTrees():
+    """Build up all trees using a generator style"""
+    root_cursor = get_parents()
+    for root in comment_iter(root_cursor):
+        tree_root, tree_features = _generate_rec_tree(root)
+        yield tree_root
+
+
+def _generate_rec_tree(root):
+    subtree_featues = []
+    child_curs = get_children_of(root.comment_id)
+    children = get_all(child_curs)
+    child_curs.close()
+    for child in children:
+        subtree, features = _generate_rec_tree(child)
+        subtree_featues.append(features)
+        root.children.append(subtree)
+
+    combined_features = SubtreeFeatures.combine(subtree_featues)
+    _compute_features(root, combined_features)
+    combined_features.update(root)
+    return root, combined_features
+
 
 
 def build_trees(comments):
