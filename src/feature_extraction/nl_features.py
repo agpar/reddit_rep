@@ -20,6 +20,8 @@ def compute_nl_features(c: Comment):
 
     stats['lang'] = comment_languge(c)
     stats['word_count'] = word_count(c)
+    stats['score'] = c.score
+    stats['controversial'] = c.controversial
     stats['prp_first'] = percent_first_pronouns(c)
     stats['prp_second'] = percent_second_pronouns(c)
     stats['prp_third'] = percent_third_pronouns(c)
