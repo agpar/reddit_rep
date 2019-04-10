@@ -14,7 +14,23 @@ def compute_subtree_metadata_features(c, stf):
     stats['desc_score_disag'] = disagreement(c,stf)
 
     stats.update(multi(stf, lambda x: x.scores, 'score'))
+    stats.update(multi(stf, lambda x: x.prp_first, 'prp_first'))
+    stats.update(multi(stf, lambda x: x.prp_second, 'prp_second'))
+    stats.update(multi(stf, lambda x: x.prp_third, 'prp_third'))
+    stats.update(multi(stf, lambda x: x.sent, 'sent'))
 
+    stats.update(multi(stf, lambda x: x.punc_ques, 'punc_ques'))
+    stats.update(multi(stf, lambda x: x.punc_excl, 'punc_excl'))
+    stats.update(multi(stf, lambda x: x.punc_per, 'punc_per'))
+
+    stats.update(multi(stf, lambda x: x.profanity, 'profanity'))
+    stats.update(multi(stf, lambda x: x.hate_count, 'hate_count'))
+    stats.update(multi(stf, lambda x: x.hate_conf, 'hate_conf'))
+    stats.update(multi(stf, lambda x: x.off_conf, 'off_conf'))
+
+    # all deleted and contro
+    stats['desc_contro'] = desc_contro(stf)
+    stats['child_deleted'] = desc_deleted(stf)
 
 def _avg(stf, selector):
     data = selector(stf)
@@ -103,3 +119,15 @@ def disagreement(comment, stf):
         return 1.0
 
     return len(neg_scores)/len(pos_scores)
+
+
+def desc_contro(stf):
+    if len(stf.comments) == 0:
+        return None
+    return stf.controversial_count / len(stf.comments)
+
+
+def desc_deleted(stf):
+    if len(stf.comments) == 0:
+        return None
+    return stf.deleted_count / len(stf.comments)

@@ -1,6 +1,6 @@
-import sqlite3
+import psycopg2
 from comment import Comment
-conn = sqlite3.connect("./data/reddit_comments")
+conn =psycopg2.connect(host="localhost", database="redditcomments", user="alex", password="localpass")
 
 
 def row_to_dict(cursor, row):
@@ -35,51 +35,100 @@ def comment_iter(cursor):
         yield Comment(d)
 
 
-def get_parents(already_seen=set()) -> sqlite3.Cursor:
+def get_by_id(comment_id):
+    query = f"""
+    SELECT * FROM comments c
+    WHERE c.id = {comment_id}
+    """
+    cursor = conn.cursor()
+    cursor.execute(query)
+    return cursor.fetchone()
+
+def get_parents(already_seen=set()):
     """Get all comments with at least one child.
 
     Sample comment data set has 579_402
     """
-    already_seen = [f"'{x}'" for x in already_seen]
-    already_seen =  "(" + ",".join(already_seen) + ")"
+    already_seen_str = [f"{x}" for x in already_seen]
+    already_seen_str = "'{}'".format("','".join(already_seen))
+    seen_query = f"id not in ({already_seen_str}) and" if already_seen else ""
     query = f"""
         SELECT * FROM comments
-        WHERE id not in {already_seen} and
-        "t1_" || id in (
+        WHERE
+        {seen_query}
+        't1_' || id in (
             SELECT parent_id
             FROM comments
         );
         """
-    cursor = conn.execute(query)
+    cursor = conn.cursor()
+    cursor.execute(query)
     return cursor
 
 
-def get_multi_parents() -> sqlite3.Cursor:
-    """Only parents with at least 2 children.
+def get_multi_parents(already_seen=set(), min_children=2):
+    """Only parents with at least some amount of children.
 
-    Sample comment data-set has 160_901
+    Sample comment data-set has 622_727 with 2.
     """
-    query = """
-        SELECT * FROM comments
-        WHERE "t1_" || id in (
+    already_seen_str = [f"{x}" for x in already_seen]
+    already_seen_str = "'{}'".format("','".join(already_seen))
+    seen_query = f"id not in ({already_seen_str}) and" if already_seen else ""
+
+    query = f"""
+        SELECT * FROM comments c1
+        WHERE
+        {seen_query}
+        't1_' || c1.id in (
             SELECT parent_id
-            FROM comments
-            group by parent_id
-            HAVING count(*) >=2
+            FROM comments c2
+            group by c2.parent_id
+            having count(*) >= 2
         );
     """
-    cursor = conn.execute(query)
+    cursor = conn.cursor()
+    cursor.execute(query)
     return cursor
 
+def get_parents_child_and_depth(already_seen=set(), min_children=2):
+    """Get parents with at least min_children and at least depth 2.
 
-def get_children_of(comment_id) -> sqlite3.Cursor:
+    Sample comments has 480_146
+    """
+    already_seen_str = [f"{x}" for x in already_seen]
+    already_seen_str = "'{}'".format("','".join(already_seen))
+    seen_query = f"id not in ({already_seen_str}) and" if already_seen else ""
+
+    query = f"""
+        SELECT * FROM comments c1
+        WHERE
+        {seen_query}
+        't1_' || c1.id in (
+            SELECT parent_id
+            FROM comments c2
+            group by c2.parent_id
+            having count(*) >= {min_children}
+        )
+        and
+        't1_' || c1.id in (
+            SELECT parent_id
+            FROM comments c2
+            where 't1_' || c2.id in (SELECT parent_id FROM comments)
+        );
+    """
+    cursor = conn.cursor()
+    cursor.execute(query)
+    return cursor
+
+def get_children_of(comment_id):
     """Get all children of a comment"""
     if not comment_id.startswith("t1_"):
         comment_id = "t1_" + comment_id
 
     query = f"""
         SELECT * FROM comments
-        WHERE parent_id == '{comment_id}';
+        WHERE parent_id = '{comment_id}';
         """
-    cursor = conn.execute(query)
+    cursor = conn.cursor()
+    cursor.execute(query)
     return cursor

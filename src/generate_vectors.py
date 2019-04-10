@@ -2,9 +2,9 @@ from trees import GenerateTrees
 import csv
 import os
 
-OUTPUT_FILE = "data/vectors.csv"
+OUTPUT_FILE = "data/vectors2.csv"
 counter = 0
-max_trees = 90_000
+max_trees = None
 force_fresh = False
 
 if force_fresh and os.path.exists(OUTPUT_FILE):

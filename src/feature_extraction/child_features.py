@@ -19,8 +19,13 @@ def compute_child_features(c):
     stats.update(multi(c, lambda x: x.stats['punc_per'], 'punc_per'))
     stats.update(multi(c, lambda x: x.stats['punc'], 'punc'))
     stats.update(multi(c, lambda x: x.stats['profanity'], 'profanity'))
+    stats.update(multi(c, lambda x: x.stats['hate_count'], 'hate_count'))
+    stats.update(multi(c, lambda x: x.stats['hate_conf'], 'hate_conf'))
+    stats.update(multi(c, lambda x: x.stats['off_conf'], 'off_conf'))
 
     stats['child_score_disag'] = child_disagreement(c)
+    stats['child_contro'] = child_contro(c)
+    stats['child_deleted'] = child_deleted(c)
 
 def _avg(comment, selector):
     data = [selector(c) for c in comment.children]
@@ -90,3 +95,17 @@ def child_disagreement(comment):
         return 1.0
 
     return len(neg_scores)/len(pos_scores)
+
+def child_contro(comment):
+    if len(comment.children) == 0:
+        return None
+    child_contro = [c.stats['controversial'] for c in comment.children]
+    pos = [s for s in child_contro if s]
+    return len(pos) / len(child_contro)
+
+def child_deleted(comment):
+    if len(comment.children) == 0:
+        return None
+    child_deleted = [c.stats['is_deleted'] for c in comment.children]
+    pos = [s for s in child_deleted if s]
+    return len(pos) / len(child_deleted)

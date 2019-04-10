@@ -8,11 +8,12 @@ import nltk
 from polyglot.detect import Detector
 from textblob import TextBlob
 from profanity_check import predict_prob as profanity
-
+from hatesonar import Sonar
 from comment import Comment, CommentFeatures
 from feature_extraction.nl_sets import *
 
 logging.basicConfig(filename='./output.log')
+hatesonar = Sonar()
 
 def compute_nl_features(c: Comment):
     c.stats = CommentFeatures()
@@ -31,6 +32,9 @@ def compute_nl_features(c: Comment):
     stats['punc_per'] = percent_punc_period(c)
     stats['punc'] = percent_punc(c)
     stats['profanity'] = profanity_prob(c)
+    stats['hate_count'] = hate_count(c)
+    stats.update(hate_sonar(c))
+    stats['is_deleted'] = ('[deleted]' == c.body)
 
 
 def _blob(comment: Comment):
@@ -45,6 +49,8 @@ def _blob(comment: Comment):
 def comment_languge(comment: Comment):
     if comment.body == '[deleted]':
         return 'en'
+    if not comment.body:
+        return 'un'
 
     d = Detector(comment.body, quiet=True)
     if not d.reliable:
@@ -155,3 +161,22 @@ def profanity_prob(comment: Comment):
     if should_nl_bail(comment):
         return None
     return float(profanity([comment.body])[0])
+
+def hate_count(comment:Comment):
+    if should_nl_bail(comment):
+        return None
+    count = 0
+    for term in eng_hate:
+        if term in _blob(comment):
+            count += 1
+    return count
+
+def hate_sonar(comment:Comment):
+    if should_nl_bail(comment):
+        return [('hate_conf',None), ('off_conf', None)]
+    res = hatesonar.ping(comment.body)
+    d = {}
+    for class_results in res['classes']:
+        d[class_results['class_name']] = class_results['confidence']
+    return [('hate_conf', d['hate_speech']),
+            ('off_conf', d['offensive_language'])]
