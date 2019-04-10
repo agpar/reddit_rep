@@ -28,7 +28,7 @@ def compute_nl_features(c: Comment):
     stats['punc_excl'] = percent_punc_exclamation(c)
     stats['punc_per'] = percent_punc_period(c)
     stats['punc'] = percent_punc(c)
-    #stats['profanity'] = profanity_prob(c)
+    stats['profanity'] = profanity_prob(c)
 
 
 def _blob(comment: Comment):

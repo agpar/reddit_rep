@@ -102,8 +102,10 @@ class Comment:
         return vect
 
     def is_valid(self):
-        vect = self.to_vector()
-        return vect and None not in vect
+        vals = list(self.ch_stats._feats.values())
+        vals.extend(list(self.st_stats._feats.values()))
+        vals.extend(list(self.stats._feats.values()))
+        return vals and None not in vals
 
 
 class CommentFeatures():
