@@ -43,6 +43,10 @@ class SubtreeComments:
         return [c.stats['sent'] for c in self.comments]
 
     @property
+    def subj(self):
+        return [c.stats['subj'] for c in self.comments]
+
+    @property
     def punc_ques(self):
         return [c.stats['punc_ques'] for c in self.comments]
 
@@ -61,6 +65,10 @@ class SubtreeComments:
     @property
     def hate_count(self):
         return [c.stats['hate_count'] for c in self.comments]
+
+    @property
+    def hedge_count(self):
+        return [c.stats['hedge_count'] for c in self.comments]
 
     @property
     def hate_conf(self):

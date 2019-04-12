@@ -38,11 +38,11 @@ def comment_iter(cursor):
 def get_by_id(comment_id):
     query = f"""
     SELECT * FROM comments c
-    WHERE c.id = {comment_id}
+    WHERE c.id = '{comment_id}'
     """
     cursor = conn.cursor()
     cursor.execute(query)
-    return cursor.fetchone()
+    return Comment(row_to_dict(cursor, cursor.fetchone()))
 
 def get_parents(already_seen=set()):
     """Get all comments with at least one child.

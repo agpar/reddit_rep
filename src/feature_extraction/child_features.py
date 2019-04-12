@@ -14,18 +14,22 @@ def compute_child_features(c):
     stats.update(multi(c, lambda x: x.stats['prp_second'], 'prp_second'))
     stats.update(multi(c, lambda x: x.stats['prp_third'], 'prp_third'))
     stats.update(multi(c, lambda x: x.stats['sent'], 'sent'))
+    stats.update(multi(c, lambda x: x.stats['subj'], 'subj'))
     stats.update(multi(c, lambda x: x.stats['punc_ques'], 'punc_ques'))
     stats.update(multi(c, lambda x: x.stats['punc_excl'], 'punc_excl'))
     stats.update(multi(c, lambda x: x.stats['punc_per'], 'punc_per'))
     stats.update(multi(c, lambda x: x.stats['punc'], 'punc'))
     stats.update(multi(c, lambda x: x.stats['profanity'], 'profanity'))
     stats.update(multi(c, lambda x: x.stats['hate_count'], 'hate_count'))
+    stats.update(multi(c, lambda x: x.stats['hedge_count'], 'hedge_count'))
     stats.update(multi(c, lambda x: x.stats['hate_conf'], 'hate_conf'))
     stats.update(multi(c, lambda x: x.stats['off_conf'], 'off_conf'))
 
     stats['child_score_disag'] = child_disagreement(c)
     stats['child_contro'] = child_contro(c)
     stats['child_deleted'] = child_deleted(c)
+    stats['child_count'] = len(c.children)
+
 
 def _avg(comment, selector):
     data = [selector(c) for c in comment.children]

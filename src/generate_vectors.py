@@ -2,7 +2,7 @@ from trees import GenerateTrees
 import csv
 import os
 
-OUTPUT_FILE = "data/vectors2.csv"
+OUTPUT_FILE = "data/vectors_new.csv"
 counter = 0
 max_trees = None
 force_fresh = False

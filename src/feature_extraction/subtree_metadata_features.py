@@ -18,6 +18,7 @@ def compute_subtree_metadata_features(c, stf):
     stats.update(multi(stf, lambda x: x.prp_second, 'prp_second'))
     stats.update(multi(stf, lambda x: x.prp_third, 'prp_third'))
     stats.update(multi(stf, lambda x: x.sent, 'sent'))
+    stats.update(multi(stf, lambda x: x.subj, 'subj'))
 
     stats.update(multi(stf, lambda x: x.punc_ques, 'punc_ques'))
     stats.update(multi(stf, lambda x: x.punc_excl, 'punc_excl'))
@@ -25,12 +26,13 @@ def compute_subtree_metadata_features(c, stf):
 
     stats.update(multi(stf, lambda x: x.profanity, 'profanity'))
     stats.update(multi(stf, lambda x: x.hate_count, 'hate_count'))
+    stats.update(multi(stf, lambda x: x.hedge_count, 'hedge_count'))
     stats.update(multi(stf, lambda x: x.hate_conf, 'hate_conf'))
     stats.update(multi(stf, lambda x: x.off_conf, 'off_conf'))
 
     # all deleted and contro
     stats['desc_contro'] = desc_contro(stf)
-    stats['child_deleted'] = desc_deleted(stf)
+    stats['desc_deleted'] = desc_deleted(stf)
 
 def _avg(stf, selector):
     data = selector(stf)

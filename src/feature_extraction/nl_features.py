@@ -27,14 +27,16 @@ def compute_nl_features(c: Comment):
     stats['prp_second'] = percent_second_pronouns(c)
     stats['prp_third'] = percent_third_pronouns(c)
     stats['sent'] = sentiment(c)
+    stats['subj'] = subjectivity(c)
     stats['punc_ques'] = percent_punc_question(c)
     stats['punc_excl'] = percent_punc_exclamation(c)
     stats['punc_per'] = percent_punc_period(c)
     stats['punc'] = percent_punc(c)
     stats['profanity'] = profanity_prob(c)
     stats['hate_count'] = hate_count(c)
+    stats['hedge_count'] = hedge_count(c)
     stats.update(hate_sonar(c))
-    stats['is_deleted'] = ('[deleted]' == c.body)
+    stats['is_deleted'] = ('[deleted]' == c.body or '[removed]' == c.body)
 
 
 def _blob(comment: Comment):
@@ -52,7 +54,12 @@ def comment_languge(comment: Comment):
     if not comment.body:
         return 'un'
 
-    d = Detector(comment.body, quiet=True)
+    try:
+        d = Detector(comment.body, quiet=True)
+    except:
+        print(f"Failed to parse comment {comment.comment_id}")
+        return 'un'
+
     if not d.reliable:
         return 'un'
     else:
@@ -60,6 +67,8 @@ def comment_languge(comment: Comment):
 
 
 def word_count(comment: Comment):
+    if not comment.body:
+        return 0
     return len(_blob(comment).words)
 
 
@@ -112,8 +121,13 @@ def sentiment(comment: Comment):
     if should_nl_bail(comment):
         return None
 
-    return _blob(comment).polarity
+    return _blob(comment).sentiment[0]
 
+def subjectivity(comment: Comment):
+    if should_nl_bail(comment):
+        return None
+
+    return _blob(comment).sentiment[1]
 
 def percent_punc_question(comment: Comment):
     if should_nl_bail(comment):
@@ -166,8 +180,19 @@ def hate_count(comment:Comment):
     if should_nl_bail(comment):
         return None
     count = 0
+    just_text = " ".join(_blob(comment).words).lower()
     for term in eng_hate:
-        if term in _blob(comment):
+        if term in just_text:
+            count += 1
+    return count
+
+def hedge_count(comment:Comment):
+    if should_nl_bail(comment):
+        return None
+    count = 0
+    just_text = " ".join(_blob(comment).words).lower()
+    for term in eng_hedge:
+        if term in just_text:
             count += 1
     return count
 
