@@ -8,13 +8,17 @@ from feature_extraction import compute_child_features
 from feature_extraction import compute_nl_features
 from feature_extraction import compute_subtree_metadata_features
 from settings import settings
-from sql_query import get_parents, get_all, comment_iter, get_children_of, get_parents_child_and_depth
+from sql_query import get_parents, get_all, comment_iter, get_children_of, get_parents_child_and_depth, get_by_id
 
 
 def GenerateTrees(already_seen=set(), min_children=2):
     """Build up all trees using a generator style"""
-    root_cursor = get_parents_child_and_depth(already_seen, min_children)
-    for root in comment_iter(root_cursor):
+    root_cursor = get_parents_child_and_depth(set(), min_children)
+    all_ids = root_cursor.fetchall()
+    new_ids = set([x[0] for x in all_ids]) - already_seen
+    assert(len(new_ids) == len(all_ids) - len(already_seen))
+    for new_id in new_ids:
+        root = get_by_id(new_id)
         tree_root, tree_features = _generate_rec_tree(root)
         yield tree_root
 

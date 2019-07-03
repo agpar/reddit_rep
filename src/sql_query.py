@@ -100,7 +100,7 @@ def get_parents_child_and_depth(already_seen=set(), min_children=2):
     seen_query = f"id not in ({already_seen_str}) and" if already_seen else ""
 
     query = f"""
-        SELECT * FROM comments c1
+        SELECT c1.id FROM comments c1
         WHERE
         {seen_query}
         't1_' || c1.id in (
