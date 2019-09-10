@@ -1,6 +1,7 @@
 import psycopg2
 from comment import Comment
-conn =psycopg2.connect(host="localhost", database="redditcomments", user="alex", password="localpass")
+from settings import settings
+conn = psycopg2.connect(**settings["DB"])
 
 
 def row_to_dict(cursor, row):
